@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 import importlib
-import okex_engine
-importlib.reload(okex_engine)
+import okx_engine
+importlib.reload(okx_engine)
 
 import logging
 import time
 from IPython.core.debugger import set_trace
 from IPython.terminal.embed import embed
 
-from vnpy.trader.constant import (
+from vnpy_evo.trader.constant import (
     Direction,
     Exchange,
     Interval,
@@ -20,18 +20,16 @@ from vnpy.trader.constant import (
 )
 
 
-from vnpy.event import EventEngine
-from vnpy.trader.engine import MainEngine
-from vnpy.trader.event import EVENT_LOG, EVENT_ACCOUNT
-from vnpy.trader.setting import SETTINGS
+from vnpy_evo.event import EventEngine
+from vnpy_evo.trader.engine import MainEngine
+from vnpy_evo.trader.event import EVENT_LOG, EVENT_ACCOUNT
+from vnpy_evo.trader.setting import SETTINGS
 
-#from vnpy_ctastrategy import CtaEngine, CtaStrategyApp
-
-from okex_engine import EVENT_CRYPTO_LOG, OKEXEngine
+from okx_engine import EVENT_CRYPTO_LOG, OKXEngine
 from vnpy_okx import OkxGateway
 
 try:
-    from local_setting import (okex_setting)
+    from local_setting import (okx_setting)
 except ImportError:
     raise
 
@@ -50,9 +48,9 @@ def init_engine():
     for gateway in gateways:
         main_engine.add_gateway(gateway)
 
-    engine = OKEXEngine(main_engine, event_engine, terminal=False)
+    engine = OKXEngine(main_engine, event_engine, terminal=False)
 
-    engine.connect_gateway(okex_setting, "OKX")
+    engine.connect_gateway(okx_setting, "OKX")
     engine.init_ccxt()
     return engine
 

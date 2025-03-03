@@ -1,8 +1,8 @@
 from time import sleep
-from engine import OKEXEngine
+from okx_engine import OKXEngine
 
 
-def run(engine: OKEXEngine):
+def run(engine: OKXEngine):
     """
     脚本策略的主函数说明：
     1. 唯一入参是脚本引擎ScriptEngine对象，通用它来完成查询和请求操作

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import importlib
-import okx_engine
+from vn_qtrade import okx_engine
 importlib.reload(okx_engine)
 
 import logging
@@ -25,7 +25,7 @@ from vnpy_evo.trader.engine import MainEngine
 from vnpy_evo.trader.event import EVENT_LOG, EVENT_ACCOUNT
 from vnpy_evo.trader.setting import SETTINGS
 
-from okx_engine import EVENT_CRYPTO_LOG, OKXEngine
+from vn_qtrade.okx_engine import EVENT_CRYPTO_LOG, OKXEngine
 from vnpy_okx import OkxGateway
 
 try:

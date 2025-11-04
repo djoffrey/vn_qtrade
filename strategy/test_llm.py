@@ -21,7 +21,7 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(project_root / "vn_qtrade"))
 
-from ai_trade.gi_llm_integration import TradingThinkingAgent
+from vn_qtrade.ai_trade.gi_llm_integration import TradingThinkingAgent
 from vnpy_evo.trader.object import TickData
 from vnpy_evo.trader.constant import Exchange, Direction
 from datetime import datetime

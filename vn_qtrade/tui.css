@@ -1,0 +1,43 @@
+/* A basic CSS file for the TradeApp TUI layout. */
+
+/* The main screen layout */
+Screen {
+    layout: vertical;
+}
+
+/* Arrange the main content columns horizontally */
+Horizontal {
+    height: 1fr;
+}
+
+/* Define the properties for the two main vertical columns */
+.column {
+    width: 1fr;
+    height: 100%;
+    border: solid $primary;
+    margin: 0 1;
+}
+
+/* Style for the individual panels */
+PositionsPanel {
+    height: 30%;
+    border-bottom: solid $primary;
+}
+
+LogPanel {
+    height: 1fr; /* Takes the remaining space in the column */
+}
+
+OrderBookPanel {
+    height: 50%;
+    border-bottom: solid $primary;
+}
+
+TradesPanel {
+    height: 1fr; /* Takes the remaining space in the column */
+}
+
+/* Style for the tables inside the panels */
+DataTable {
+    height: 1fr;
+}

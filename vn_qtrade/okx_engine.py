@@ -41,6 +41,7 @@ from vnpy_evo.trader.event import (
     EVENT_POSITION
 )
 from vn_qtrade.ai_trade.base import EVENT_AI_SIGNAL
+from .utils import get_data, to_df
 from vnpy_evo.trader.constant import (
     Direction,
     OrderType,
@@ -784,30 +785,3 @@ class OKXEngine(CryptoEngineBase):
                 engine.write_log(f'error {data}')   
 """
 
-def to_df(data_list: Sequence):
-    """"""
-    if not data_list:
-        return None
-
-    dict_list = [data.__dict__ for data in data_list if data is not None]
-    df = DataFrame(dict_list)
-    if 'datetime' in df.columns:
-        df.index = df.datetime
-    return df
-
-
-def get_data(func: callable, arg: Any = None, use_df: bool = True):
-    """"""
-    if not arg:
-        data = func()
-    else:
-        data = func(arg)
-
-    if not use_df:
-        return data
-    elif data is None:
-        return data
-    else:
-        if not isinstance(data, list):
-            data = [data]
-        return to_df(data)

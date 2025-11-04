@@ -48,6 +48,7 @@ from vnpy_evo.trader.constant import (
 )
 
 from vnpy_evo.trader.utility import load_json, save_json, extract_vt_symbol, round_to
+from .utils import get_data
 from concurrent.futures import ThreadPoolExecutor
 
 from copy import copy

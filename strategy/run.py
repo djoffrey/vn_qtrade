@@ -28,6 +28,9 @@ from vnpy_evo.trader.setting import SETTINGS
 from vn_qtrade.okx_engine import EVENT_CRYPTO_LOG, OKXEngine
 from vnpy_okx import OkxGateway
 
+# Import AI Agent Engine
+from vn_qtrade.ai_trade.engine import AIAgentEngine
+
 try:
     from local_setting import (okx_setting)
 except ImportError:
@@ -48,21 +51,34 @@ def init_engine():
     for gateway in gateways:
         main_engine.add_gateway(gateway)
 
+    # Initialize OKX trading engine
     engine = OKXEngine(main_engine, event_engine, terminal=False)
+
+    # Initialize AI Agent Engine with LLM capabilities
+    ai_engine = AIAgentEngine(main_engine, event_engine)
 
     engine.connect_gateway(okx_setting, "OKX")
     engine.init_ccxt()
-    return engine
+
+    # Log initialization
+    engine.write_log("=== Trading System Initialized ===")
+    engine.write_log("OKX Trading Engine: Ready")
+    engine.write_log("AI Agent Engine: LLM thinking enabled")
+
+    return engine, ai_engine
 
 def main():
 
-    engine = init_engine()
-
+    engine, ai_engine = init_engine()
 
     time.sleep(1)
     engine.start_strategy('demo.py')
-    #engine.start_strategy('grid1.py')
 
+    engine.write_log("=== System Running ===")
+    engine.write_log("Press Ctrl+C once to enter REPL")
+    engine.write_log("Press Ctrl+C twice to exit")
+
+    # Start AI engine monitoring
     while True:
         if engine.monitor_thread.is_set():
             embed(colors="Linux")

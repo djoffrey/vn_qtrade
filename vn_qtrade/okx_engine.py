@@ -6,7 +6,7 @@ import sys
 import traceback
 from typing import Sequence, Any
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import time
 import threading
 import signal
@@ -40,6 +40,7 @@ from vnpy_evo.trader.event import (
     EVENT_TRADE,
     EVENT_POSITION
 )
+from vn_qtrade.ai_trade.base import EVENT_AI_SIGNAL
 from vnpy_evo.trader.constant import (
     Direction,
     OrderType,
@@ -126,15 +127,31 @@ class OKXEngine(CryptoEngineBase):
         self.event_engine.register(EVENT_ORDER, self.process_order_event)
         self.event_engine.register(EVENT_TRADE, self.process_trade_event)
         self.event_engine.register(EVENT_POSITION, self.process_position_event)
+        # Register AI signal event listener
+        self.event_engine.register(EVENT_AI_SIGNAL, self.process_ai_signal_event)
 
     def process_tick_event(self, event: Event):
         """"""
         tick = event.data
         self.last_tick[tick.vt_symbol] = tick
+        self.check_latency(tick)
         try:
             self.check_trigger_trigger_order(tick)
         except Exception as e:
             self.write_log(f'tick error {e}')
+
+    def check_latency(self, tick: TickData):
+        """
+        Checks the latency between the tick timestamp and the current time.
+        """
+        now = datetime.now(timezone.utc)
+
+        # OKX sends UTC time, but the datetime object is naive. Attach timezone info.
+        aware_tick_datetime = tick.datetime.replace(tzinfo=timezone.utc)
+
+        latency = now - aware_tick_datetime
+        latency_ms = latency.total_seconds() * 1000
+        self.write_log(f"Market data latency for {tick.vt_symbol}: {latency_ms:.2f} ms")
 
     def pause(self):
         if self._pause is False:
@@ -163,6 +180,36 @@ class OKXEngine(CryptoEngineBase):
         except Exception as e:
             self.write_log(f'position error {e}')
         self.last_position[position.vt_symbol] = position
+
+    def process_ai_signal_event(self, event: Event):
+        """
+        Process AI-generated trading signals.
+
+        This method is triggered when AIAgentEngine emits an EVENT_AI_SIGNAL.
+        It executes the trading action recommended by the LLM.
+        """
+        signal = event.data
+
+        try:
+            self.write_log(f"Received AI Signal: {signal.vt_symbol} {signal.direction.value} {signal.volume} @ {signal.price}")
+            self.write_log(f"AI Rationale: {signal.rationale}")
+
+            # Execute the trade based on signal
+            if signal.direction == Direction.LONG:
+                # Buy to open long position or close short position
+                order_id = self.buy(signal.vt_symbol, signal.price, signal.volume)
+            else:
+                # Sell to open short position or close long position
+                order_id = self.sell(signal.vt_symbol, signal.price, signal.volume)
+
+            if order_id:
+                self.write_log(f"AI trade executed successfully: {order_id}")
+            else:
+                self.write_log(f"AI trade failed to execute")
+
+        except Exception as e:
+            self.write_log(f"Error processing AI signal: {e}")
+            self.write_log(f"Signal details: {signal}")
 
     def set_lever(self, vt_symbol, lever):
         symbol, exchange_name = extract_vt_symbol(vt_symbol)

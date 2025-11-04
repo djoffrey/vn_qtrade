@@ -42,6 +42,24 @@ class AIAgentEngine(BaseEngine):
 
         self.write_log("AIAgentEngine initialized with LLM thinking capabilities")
 
+    def write_log(self, msg: str) -> None:
+        """
+        Write a log message.
+        """
+        print(f"[AIAgentEngine] {msg}")
+
+    def log_info(self, msg: str) -> None:
+        """Log info message."""
+        self.write_log(msg)
+
+    def log_error(self, msg: str) -> None:
+        """Log error message."""
+        print(f"[AIAgentEngine ERROR] {msg}")
+
+    def log_debug(self, msg: str) -> None:
+        """Log debug message."""
+        print(f"[AIAgentEngine DEBUG] {msg}")
+
     def register_event(self) -> None:
         """
         Register event listeners.

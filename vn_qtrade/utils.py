@@ -1,7 +1,40 @@
 import pytz
 import datetime
+from typing import Sequence, Any, Callable
 
 import pandas as pd
+from pandas import DataFrame
+
+def to_df(data_list: Sequence):
+    """
+    Convert a list of objects to DataFrame.
+    """
+    if not data_list:
+        return None
+
+    dict_list = [data.__dict__ for data in data_list if data is not None]
+    df = DataFrame(dict_list)
+    if 'datetime' in df.columns:
+        df.index = df.datetime
+    return df
+
+def get_data(func: Callable, arg: Any = None, use_df: bool = True):
+    """
+    Helper function to call a function and optionally convert to DataFrame.
+    """
+    if not arg:
+        data = func()
+    else:
+        data = func(arg)
+
+    if not use_df:
+        return data
+    elif data is None:
+        return data
+    else:
+        if not isinstance(data, list):
+            data = [data]
+        return to_df(data)
 
 def kline_to_dataframe(kline_arr) -> pd.DataFrame:
     """

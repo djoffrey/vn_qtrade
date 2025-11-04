@@ -65,7 +65,8 @@ class AIAgentEngine(BaseEngine):
         Register event listeners.
         The AI engine needs to listen to market data to make decisions.
         """
-        self.event_engine.register(EVENT_TICK, self.process_tick_event)
+        #self.event_engine.register(EVENT_TICK, self.process_tick_event)
+        pass
 
     def process_tick_event(self, event) -> None:
         """
